@@ -1,0 +1,107 @@
+@import "../base/fn.less";
+
+.about__hero {
+
+  width: 750rpx;
+  height: 800rpx;
+
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  background-color:rgba(0,0,0,0.80);
+
+  .about__hero_title {
+
+    padding: 80rpx 0 60rpx;
+
+    font-size: 48rpx;
+    color: @mainColor;
+    text-align: center;
+  }
+
+  .about__hero_desc {
+
+    width: 600rpx;
+
+    font-size: 30rpx;
+    color: @mainColor;
+    line-height: 2;
+    text-align: justify;
+
+    margin: 0 auto;
+  }
+}
+
+.about__card {
+
+  width: 750rpx;
+  height: 360rpx;
+
+  transform: translateY(-180rpx);
+
+  .about__card_wrap {
+
+    width: 750rpx;
+    height: 380rpx;
+
+    padding: 10rpx 0;
+
+    .about__card_scroll {
+      
+      height: 360rpx;
+    }
+
+    .about__card_item {
+
+      display: inline-block;
+      
+      width: 360rpx;
+      height: 360rpx;
+
+      margin-right: 30rpx;
+      padding: 20rpx 24rpx;
+
+      background-color: @mainColor;
+
+      box-shadow:0 0 30px 0 rgba(0,0,0,0.05);
+
+      .about__card_name {
+
+        font-size: 48rpx;
+        color: @darkColor;
+      }
+
+      .about__card_context {
+
+        margin-top: 30rpx;
+
+        font-size: 30rpx;
+        color: @darkColor;
+
+        opacity: 0.6;
+      }
+
+      .about__card_foot {
+
+        margin-top: 40rpx;
+
+        font-size: 26rpx;
+        font-weight: @font_medium;
+      }
+    }
+  }
+}
+
+.about__foot {
+
+  position: absolute;
+  bottom: 88rpx;
+  left: 0;
+
+  width: 750rpx;
+
+  font-size: 26rpx;
+  color: @darkColor;
+  text-align: center;
+}

@@ -1,0 +1,62 @@
+@import "../base/fn.less";
+
+.voice__time {
+
+  .flex-box();
+
+  .box-center();
+
+  width: 750rpx;
+  height: 60%;
+
+  font-size: 128rpx;
+  font-weight: @font_medium;
+  color: @blurColor;
+}
+
+.voice__control {
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 750rpx;
+  height: 40%;
+
+  .voice__btns {
+
+    .flex-box();
+
+    .box-center();
+
+    .voice__btn {
+
+      width: 216rpx;
+      height: 216rpx;
+    }
+
+    .voice__no, .voice__ok {
+
+      width: 96rpx;
+      height: 96rpx;
+    }
+
+    .voice__no {
+
+      margin-right: 60rpx;
+    }
+
+    .voice__ok {
+
+      margin-left: 60rpx;
+    }
+  }
+
+  .voice__txt {
+
+    padding-top: 60rpx;
+
+    font-size: 32rpx;
+    color: #363636;
+  }
+}

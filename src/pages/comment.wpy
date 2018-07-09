@@ -1,0 +1,89 @@
+<template>
+  <view class="comment__page page">
+    <view class="comment__head">
+      <view class="comment__head_title">
+        评论
+      </view>
+      <view class="comment__head_desc">
+        共{{comments.total}}条评论
+      </view>
+    </view>
+    <view class="comment__body">
+      <scroll-view style="height: {{scrollHeight}}px;" scroll-y>
+        <repeat for="{{comments.list}}" key="index" index="index" item="comment">
+          <comment-item :comment.sync="comment" :index.sync="index" />
+        </repeat>
+      </scroll-view>
+    </view>
+    <view class="comment__comments">
+      <form>
+        <view class="comment__form_wrap">
+          <image class="comment__avatar_url" src="{{user.avatar_url}}" />
+          <view class="comment__form">
+            <input class="comment__input" cursor-spacing="{{inputPadding}}" type="text" placeholder="说点什么吧" placeholder-style="color: #9b9b9b;" />
+            <button class="comment__submit" formType="submit">发送</button>
+          </view>
+        </view>
+      </form>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+import CommentItem from '@/components/comment/item'
+
+export default class Comment extends wepy.page {
+  config = {
+    navigationBarTitleText: '查看评论'
+  }
+  data = {
+    winWidth: 0,
+    winHeight: 0,
+    scrollHeight: 0,
+    inputPadding: 0,
+    comments: [],
+    user: {
+      nick_name: '申杨杨',
+      avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+    }
+  }
+  components = {
+    'comment-item': CommentItem
+  }
+  realSize(size) {
+    return this.winWidth / 750 * size
+  }
+  onLoad() {
+    let sys = wepy.getSystemInfoSync()
+    this.winWidth = sys.windowWidth || 750
+    this.winHeight = sys.windowHeight || 1334
+    this.scrollHeight = this.winHeight - this.realSize(108) - this.realSize(215)
+    this.inputPadding = this.realSize(27)
+
+    this.comments = {
+      total: 3,
+      list: [{
+        nick_name: '申杨杨',
+        avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
+        reply_name: '',
+        context: '评论1',
+        time: '11:00'
+      }, {
+        nick_name: '申杨杨',
+        avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
+        reply_name: '王博超',
+        context: '评论1',
+        time: '11:00'
+      }, {
+        nick_name: '申杨杨',
+        avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
+        reply_name: '王博超',
+        context: '评论1',
+        time: '11:00'
+      }]
+    }
+  }
+}
+</script>

@@ -1,0 +1,21 @@
+/** 居中布局 **/
+.box-center() {
+  justify-content: center;
+  align-items: center;
+}
+
+/** 垂直居中布局 **/
+.box-middle(@direction: row) when (@direction = row) {
+  align-items: center;
+}
+/** 垂直居中布局 **/
+.box-middle(@direction: row) when (@direction = column) {
+  justify-content: center;
+}
+
+/** 弹性布局 **/
+.flex-box(@direction: row) {
+  display: flex;
+  flex-direction: @direction;
+}
+

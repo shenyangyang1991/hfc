@@ -1,0 +1,51 @@
+page {
+  /** 行高 **/
+  line-height: 1.6;
+}
+
+page, .page {
+  /** 全屏高度 **/
+  position: relative;
+  height: 100%;
+}
+
+view {
+  /** 尺寸模式 **/
+  box-sizing: border-box;
+}
+
+image {
+  /** 块 **/
+  display: block;
+
+  height: 100%;
+}
+
+navigator {
+
+  width: 100%;
+}
+
+button {
+  /** 按钮清除默认样式 **/
+  position: relative;
+  /** 尺寸 **/
+  width: auto;
+  height: auto;
+  /** 边距 **/
+  padding: 0;
+  margin: 0;
+  /** 边框角标 **/
+  border: 0;
+  border-radius: 0;
+  /** 行高 **/
+  line-height: 1;
+  /** 透明 **/
+  background-color: transparent;
+
+  &:after {
+    /** 边框角标 **/
+    border: 0;
+    border-radius: 0;
+  }
+}

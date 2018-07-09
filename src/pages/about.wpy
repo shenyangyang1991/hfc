@@ -1,0 +1,58 @@
+<template>
+  <view class="about__page page">
+    <view class="about__hero">
+      <view class="about__hero_title">关于我们</view>
+      <view class="about__hero_desc">
+        HIGHFANER是全球最大的自由、价值平等的去中心化的青年文化社交网络。用户在社交网络中做的一切都有机会获得奖励，发行量有限，获得奖励的数量将越来越少，越早加入的收益越多。
+      </view>
+    </view>
+    <view class="about__card">
+      <scroll-view class="about__card_wrap" scroll-x>
+        <view class="about__card_scroll" style="width: {{scrollWidth}}rpx;">
+          <view wx:for="{{cards}}" wx:key="unique" wx:for-index="index" wx:for-item="item" class="about__card_item" style="margin-left: {{index == 0 ? 30 : 0}}rpx;">
+            <view class="about__card_name">
+              {{item.name}}
+            </view>
+            <view class="about__card_context">
+              {{item.desc}}
+            </view>
+            <view class="about__card_foot">
+              {{item.label}}
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="about__foot">
+      微信关注：嗨范儿APP了解更多内容
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class About extends wepy.page {
+  config = {
+    navigationBarTitleText: '关于我们'
+  }
+  data = {
+    scrollWidth: 0,
+    cards: [{
+      name: '自由',
+      desc: '嗨范儿因独特的你而生发现你的隐性需求',
+      label: 'FREEDOM'
+    }, {
+      name: '自由',
+      desc: '嗨范儿因独特的你而生发现你的隐性需求',
+      label: 'FREEDOM'
+    }, {
+      name: '去中心化',
+      desc: '嗨范儿因独特的你而生发现你的隐性需求',
+      label: 'FREEDOM'
+    }]
+  }
+  onLoad() {
+    this.scrollWidth = 3 * 360 + 4 * 30
+  }
+}
+</script>

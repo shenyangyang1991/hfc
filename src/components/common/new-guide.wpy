@@ -1,0 +1,168 @@
+<style lang="less">
+@import "../../assets/style/base/fn.less";
+
+.new__guide_comp-hide {
+
+  display: none!important;
+}
+
+.new__guide_comp {
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  .flex-box();
+
+  .box-center();
+
+  width: 100%;
+  height: 100%;
+
+  z-index: 99999;
+
+  background-color: rgba(0, 0, 0, 0.6);
+
+  .new__guide_wrap {
+
+    opacity: 0;
+
+    width: 630rpx;
+    height: 566rpx;
+
+    background-color: @blurColor;
+
+    border-radius: 16rpx;
+    overflow: hidden;
+
+    .new__guide_head {
+
+      .flex-box(column);
+
+      .box-center();
+
+      height: 458rpx;
+    }
+
+    .new__guide_wel-logo {
+
+      width: 136rpx;
+      height: 136rpx;
+
+      border-radius: 80rpx;
+      overflow: hidden;
+    }
+
+    .new__guide_wel-wrap {
+
+      .flex-box();
+
+      .box-center();
+
+      width: 160rpx;
+      height: 160rpx;
+
+      border-radius: 100rpx;
+      overflow: hidden;
+
+      background-color: rgba(255,255,255,0.10);
+    }
+
+    .new__guide_wel-name {
+
+      padding: 30rpx 0;
+
+      font-size: 30rpx;
+      color: @mainColor;
+    }
+
+    .new__guide_desc {
+
+      opacity: 0.6;
+
+      font-size: 26rpx;
+      color: @mainColor;
+    }
+
+    .new__guide_yes {
+
+      .flex-box();
+
+      .box-center();
+
+      height: 108rpx;
+
+      font-size: 30rpx;
+      color: @mainColor;
+
+      background-color: rgba(255,255,255,0.10);
+
+      border-radius: 0 0 16rpx 16rpx;
+      overflow: hidden;
+    }
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+export default class NewGuide extends wepy.component {
+  data = {
+    reveal: false,
+    guide: {},
+    animationData: '',
+    timer: null
+  }
+  methods = {
+    show(guide) {
+      this.guide = guide
+      this.reveal = true
+      this.$apply()
+      if (this.timer) clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        const animation = wepy.createAnimation({
+          duration: 100
+        })
+        animation.opacity(1).step()
+        this.animationData = animation.export()
+        this.$apply()
+      }, 50)
+    },
+    hide() {
+      const animation = wepy.createAnimation({
+        duration: 100
+      })
+      animation.opacity(0).step()
+      this.animationData = animation.export()
+      this.$apply()
+      if (this.timer) clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        this.reveal = false
+        this.guide = {}
+        this.$apply()
+      }, 100)
+    }
+  }
+}
+</script>
+
+<template>
+  <view class="new__guide_comp {{reveal ? '' : 'new__guide_comp-hide'}}" >
+    <view class="new__guide_wrap" animation="{{animationData}}">
+      <view class="new__guide_head">
+        <view class="new__guide_wel-wrap">
+          <image class="new__guide_wel-logo" src="{{guide.logo}}" />
+        </view>
+        <view class="new__guide_wel-name">
+          {{guide.name}}
+        </view>
+        <view class="new__guide_desc">
+          {{guide.desc}}
+        </view>
+      </view>
+      <view class="new__guide_yes" @tap="hide">
+        我知道了
+      </view>
+    </view>
+  </view>
+</template>

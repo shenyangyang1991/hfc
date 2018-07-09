@@ -1,0 +1,24 @@
+<template>
+  <view class="voice__page page">
+    <view class="voice__time">
+      00:00
+    </view>
+    <view class="voice__control">
+      <view class="voice__btns">
+        <image class="voice__no" src="/assets/image/icon-voice-no.png" />
+        <image class="voice__btn" src="/assets/image/icon-voice-play.png" />
+        <image class="voice__ok" src="/assets/image/icon-voice-ok.png" />
+      </view>
+      <view class="voice__txt">点击按钮录音</view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Voice extends wepy.page {
+  config = {
+    navigationBarTitleText: '录音'
+  }
+}
+</script>

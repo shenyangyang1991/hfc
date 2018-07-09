@@ -1,0 +1,88 @@
+<style lang="less">
+@import "../../assets/style/base/fn.less";
+
+.comment__item_no-border {
+
+  border-top: 0!important;
+}
+
+.comment__item_comp {
+  
+  .flex-box();
+
+  .box-middle();
+
+  padding: 30rpx 0;
+
+  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
+
+  .comment__item_face {
+
+    width: 72rpx;
+    height: 72rpx;
+
+    margin-right: 10rpx;
+
+    border-radius: 200rpx;
+    overflow: hidden;
+  }
+
+  .comment__item_content {
+
+    flex: 1;
+
+    .comment__item_name {
+
+      font-size: 26rpx;
+      color: @darkColor;
+      font-weight: @font_medium;
+    }
+
+    .comment__item_text {
+
+      .flex-box();
+
+      font-size: 26rpx;
+      color: @darkColor;
+
+      .comment__item_friend {
+
+        font-weight: @font_medium;
+      }
+    }
+  }
+
+  .comment__item_time {
+
+    font-size: 26rpx;
+    color: @darkColor;
+
+    opacity: 0.6;
+  }
+}
+</style>
+
+<template>
+  <view class="comment__item_comp {{index == 0 ? 'comment__item_no-border' : ''}}">
+    <image class="comment__item_face" src="{{comment.avatar_url}}" />
+    <view class="comment__item_content">
+      <view class="comment__item_name">
+        {{comment.nick_name}}
+      </view>
+      <view class="comment__item_text">
+        <view wx:if="{{comment.reply_name}}" class="comment__item_friend">回复{{comment.reply_name}}：</view>
+        {{comment.context}}
+      </view>
+    </view>
+    <view class="comment__item_time">
+      {{comment.time}}
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class CommentItem extends wepy.component {
+  props = ['comment', 'index']
+}
+</script>

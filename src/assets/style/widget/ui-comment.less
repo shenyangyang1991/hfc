@@ -1,0 +1,99 @@
+@import "../base/fn.less";
+
+.comment__head {
+
+  padding: 40rpx 30rpx 0;
+
+  .comment__head_title {
+
+    font-size: 64rpx;
+    color: @darkColor;
+    font-weight: @font_medium;
+  }
+
+  .comment__head_desc {
+
+    font-size: 26rpx;
+    color: @darkColor;
+
+    opacity: 0.6;
+  }
+}
+
+.comment__body {
+
+  padding: 30rpx 30rpx 0;
+}
+
+.comment__comments {
+
+  height: 108rpx;
+
+  padding: 0 30rpx;
+
+  border-top: 1rpx solid rgba(0,0,0,0.05);
+
+  .comment__form_wrap {
+
+    .flex-box();
+
+    .box-center();
+
+    height: 108rpx;
+  }
+
+  .comment__avatar_url {
+
+    width: 82rpx;
+    height: 82rpx;
+
+    margin-right: 20rpx;
+
+    border-radius: 200rpx;
+    overflow: hidden;
+  }
+
+  .comment__form {
+
+    .flex-box();
+
+    .box-middle();
+
+    width: 588rpx;
+    height: 80rpx;
+
+    padding: 18rpx 30rpx;
+
+    border: 1rpx solid rgba(0,0,0,0.3);
+
+    border-radius: 200rpx;
+    overflow: hidden;
+
+    .comment__input {
+
+      flex: 1;
+      
+      height: 44rpx;
+      min-height: 44rpx;
+
+      font-size: 26rpx;
+      color: @darkColor;
+      line-height: 44rpx;
+    }
+
+    .comment__submit {
+
+      .flex-box();
+
+      .box-center();
+
+      width: 84rpx;
+      height: 44rpx;
+
+      font-size: 26rpx;
+      color: @blurColor;
+
+      opacity: 0.6;
+    }
+  }
+}

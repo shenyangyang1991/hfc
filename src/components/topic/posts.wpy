@@ -1,0 +1,270 @@
+<style lang="less">
+@import "../../assets/style/base/fn.less";
+
+.posts__comp {
+
+  padding: 0 30rpx;
+
+  .posts__no_border {
+
+    border-top: 0!important;
+  }
+
+  .posts__wrap {
+
+    padding-bottom: 30rpx;
+
+    border-top: 1rpx solid rgba(0, 0, 0, 0.05);
+
+    .posts__head {
+      
+      .flex-box();
+
+      .box-middle();
+
+      height: 94rpx;
+      padding-top: 30rpx;
+
+      overflow: hidden;
+
+      .posts__user {
+
+        flex: 1;
+
+        .flex-box();
+
+        .box-middle();
+
+        .posts__avatar_url {
+
+          width: 64rpx;
+          height: 64rpx;
+
+          margin-right: 20rpx;
+
+          border-radius: 32rpx;
+          overflow: hidden;
+        }
+
+        .posts__user_name {
+
+          font-size: 26rpx;
+          color: @darkColor;
+        }
+
+        .posts__time {
+
+          font-size: 22rpx;
+          color: #9b9b9b;
+        }
+      }
+
+      .posts__more {
+
+        width: 26rpx;
+        height: 6rpx;
+      }
+    }
+
+    .posts__body {
+
+      padding: 30rpx 0;
+
+      .posts__title {
+
+        font-size: 36rpx;
+        color: @darkColor;
+      }
+
+      .posts__content {
+        
+        padding-top: 30rpx;
+
+        .img {
+
+          width: 690rpx;
+        }
+      }
+    }
+
+    .posts__foot {
+
+      .posts__action {
+        
+        .flex-box();
+
+        .box-middle();
+
+        .posts__action_group {
+
+          flex: 1;
+
+          .flex-box();
+
+          .box-middle();
+
+          image {
+
+            padding-right: 30rpx;
+          }
+
+          .like {
+
+            width: 48rpx;
+            height: 44rpx;
+          }
+
+          .comment {
+
+            width: 44rpx;
+            height: 44rpx;
+          }
+
+          .share {
+
+            width: 42rpx;
+            height: 40rpx;
+          }
+        }
+
+        .posts__hfc {
+          
+          .flex-box();
+
+          .box-center();
+
+          width: 176rpx;
+          height: 52rpx;
+
+          padding-top: 8rpx;
+
+          font-family: 'HFC';
+          font-size: 32rpx;
+          color: @darkColor;
+
+          background-color: #f1f0f5;
+
+          border-radius: 200rpx;
+          overflow: hidden;
+        }
+      }
+
+      .posts__count {
+
+        padding: 20rpx 0 10rpx;
+
+        display: flex;
+
+        .posts__count_like {
+
+          font-size: 26rpx;
+          color: @darkColor;
+          font-weight: @font_medium;
+        }
+      }
+
+      .posts__comments {
+
+        .posts__comments_item {
+
+          .flex-box();
+
+          .box-middle();
+
+          font-size: 26rpx;
+          color: @darkColor;
+
+          .posts__comments_name {
+
+            font-weight: @font_medium;
+          }
+        }
+
+        .posts__comments_view {
+
+          font-size: 26rpx;
+          color: @darkColor;
+
+          opacity: 0.6;
+        }
+      }
+    }
+  }
+}
+</style>
+
+<template>
+  <view class="posts__comp">
+    <view class="posts__wrap {{index == 0 ? 'posts__no_border' : ''}}">
+      <view class="posts__head">
+        <view class="posts__user">
+          <image class="posts__avatar_url" src="{{posts.user.avatar_url}}" />
+          <view class="posts__info">
+            <view class="posts__user_name">
+              {{posts.user.nick_name}}
+            </view>
+            <view class="posts__time">1周前</view>
+          </view>
+        </view>
+        <image class="posts__more" src="/assets/image/more.png" />
+      </view>
+      <view class="posts__body">
+        <view wx:if="{{posts.title}}" class="posts__title">
+          {{posts.title}}
+        </view>
+        <view wx:if="{{posts.poster}}" class="posts__content">
+          <image class="img" mode="widthFix" src="{{posts.poster}}" />
+        </view>
+        <view wx:if="{{posts.voice}}" class="posts__voice">
+          <audio poster="{{posts.user.avatar_url}}" src="{{posts.voice}}" controls loop></audio>
+        </view>
+      </view>
+      <view class="posts__foot">
+        <view class="posts__action">
+          <view class="posts__action_group">
+            <image class="like" src="{{posts.like ? '/assets/image/like.png' : '/assets/image/unlike.png'}}" @tap="toggleLike" />
+            <image class="comment" src="/assets/image/comment.png" @tap="toComment" />
+            <image class="share" src="/assets/image/share.png" @tap="openShare" />
+          </view>
+          <!-- <view class="posts__hfc">
+            {{posts.hfc}} HFC
+          </view> -->
+        </view>
+        <view class="posts__count">
+          <view class="posts__count_like">{{posts.like_cnt}}次点赞</view>
+        </view>
+        <view class="posts__comments">
+          <view wx:for="{{posts.comment_list}}" wx:key="unique" wx:for-index="i" wx:for-item="item" class="posts__comments_item">
+            <view class="posts__comments_name">{{item.user.nick_name}}：</view>
+            <view class="posts__comments_content">{{item.title}}</view>
+          </view>
+          <view class="posts__comments_view" @tap="toComment">
+            查看3条评论
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Posts extends wepy.component {
+  props = ['posts', 'index']
+  methods = {
+    toComment() {
+      wepy.navigateTo({
+        url: '/pages/comment'
+      })
+    },
+    openShare() {
+      this.$emit('share-event')
+    },
+    toggleLike() {
+      this.posts.like = !this.posts.like
+      this.$apply()
+    }
+  }
+}
+</script>

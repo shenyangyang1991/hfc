@@ -1,0 +1,55 @@
+<style lang="less">
+@import "../../assets/style/base/fn.less";
+
+@title_font_size: 72rpx;
+@title_font_color: @darkColor;
+@desc_font_size: 26rpx;
+@desc_font_color: @darkColor;
+
+.hero__comp {
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
+
+  width: 750rpx;
+
+  padding: 0 30rpx 30rpx;
+
+  background-color: @mainColor;
+
+  .hero__title {
+
+    font-size: @title_font_size;
+    color: @title_font_color;
+    font-weight: @font_medium;
+  }
+
+  .hero__desc {
+
+    font-size: @desc_font_size;
+    color: @desc_font_color;
+
+    opacity: 0.6;
+  }
+}
+</style>
+
+<template>
+  <view class="hero__comp">
+    <view class="hero__title">
+      {{title}}
+    </view>
+    <view class="hero__desc">
+      {{desc}}
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Hero extends wepy.component {
+  props = ['title', 'desc']
+}
+</script>

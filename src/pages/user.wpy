@@ -1,0 +1,98 @@
+<template>
+  <view class="user__page page">
+    <view class="user__info">
+      <view class="user__name">
+        <view class="user__nick_name">
+          {{user.nick_name}}
+        </view>
+        <view class="user__join">
+          来到HIGHFANER的第{{user.join_cnt}}天
+        </view>
+      </view>
+      <image class="user__face" src="{{user.avatar_url}}" />
+    </view>
+    <!-- <view class="user__quick">
+      <navigator hover-class="none" wx:for="{{quick}}" wx:key="unique" wx:for-index="index" wx:for-item="item" url="{{item.url}}" class="user__quick_item" style="background-image: {{item.bg}};">
+        <view class="user__quick_head">
+          <view class="user__quick_name">
+            {{item.name}}
+          </view>
+          <view class="user__quick_btn" style="color: {{item.btn.color}};">
+            {{item.btn.txt}}
+          </view>
+        </view>
+        <view class="user__quick_body">
+          {{item.val.num}}
+          <view class="user__unit">
+            {{item.val.unit}}
+          </view>
+        </view>
+      </navigator>
+    </view> -->
+    <view class="user__page_menu">
+      <navigator hover-class="none" wx:for="{{menus}}" wx:key="unique" wx:for-index="index" wx:for-item="item" class="user__nav_comp" url="{{item.url}}">
+        <view class="user__nav_title">{{item.title}}</view>
+        <view wx:if="{{item.news}}" class="user__nav_news">
+          {{item.news}}
+        </view>
+        <image class="user__nav_icon" src="/assets/image/icon-next.png" />
+      </navigator>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class User extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的'
+  }
+  components = {
+  }
+  data = {
+    menus: [{
+      title: '我的动态',
+      news: '',
+      url: '/pages/my-posts'
+    }, {
+      title: '邀请好友',
+      news: ''
+    }, {
+      title: '关于我们',
+      news: '',
+      url: '/pages/about'
+    }],
+    user: {
+      join: '100',
+      nick_name: '申杨杨',
+      avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+    }
+    // quick: [{
+    //   url: '/pages/my-point',
+    //   name: '我的嗨点',
+    //   val: {
+    //     num: '987',
+    //     unit: ''
+    //   },
+    //   btn: {
+    //     txt: '赚嗨点',
+    //     color: '#18b2f0'
+    //   },
+    //   bg: 'linear-gradient(270deg, #18b2f0 0%, #1973e7 100%)'
+    // }, {
+    //   url: '/pages/my-gold',
+    //   name: '我的资产',
+    //   val: {
+    //     num: '12.3',
+    //     unit: 'HFC'
+    //   },
+    //   btn: {
+    //     txt: '去充值',
+    //     color: '#e65cfb'
+    //   },
+    //   bg: 'linear-gradient(270deg, #e65cfb 0%, #8c2ff0 100%)'
+    // }]
+  }
+}
+</script>

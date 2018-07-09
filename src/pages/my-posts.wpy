@@ -1,0 +1,68 @@
+<template>
+  <view class="my__posts_page page">
+    <view class="my__posts_head">
+      <view class="my__posts_head-title">
+        动态
+      </view>
+      <view class="my__posts_head-desc">
+        共生产12K条内容
+      </view>
+    </view>
+
+    <view class="my__posts_body">
+      <repeat for="{{posts}}" key="index" index="index" item="post">
+        <posts :posts.sync="post" :index="index" />
+      </repeat>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+import Posts from '@/components/topic/posts'
+
+export default class MyPosts extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的动态'
+  }
+  components = {
+    'posts': Posts
+  }
+  data = {
+    posts: [{
+      id: '1',
+      title: '还有一个月才开我的暑假生活',
+      nick_name: '申杨杨',
+      avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
+      content_file: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
+      hfc: '10K',
+      like: false,
+      likes: '10K',
+      comments: [{
+        nick_name: '王博超',
+        context: 'cool'
+      }, {
+        nick_name: '王博超',
+        context: 'cool'
+      }]
+    }, {
+      id: '2',
+      title: '还有一个月才开我的暑假生活',
+      nick_name: '申杨杨',
+      avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
+      content_file: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
+      hfc: '10K',
+      likes: '10K',
+      like: true,
+      comments: [{
+        nick_name: '王博超',
+        context: 'cool'
+      }, {
+        nick_name: '王博超',
+        context: 'cool'
+      }]
+    }]
+  }
+}
+</script>

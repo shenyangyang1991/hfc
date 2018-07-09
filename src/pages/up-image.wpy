@@ -1,0 +1,36 @@
+<template>
+  <view class="page up__posts_page">
+    <view class="up__posts_body">
+      <view class="up__posts_content">
+        <textarea class="up__posts_txt" placeholder="说你想说的一切……" placeholder-style="color: #a3a2a7;" />
+      </view>
+      <view class="up__posts_img">
+        <image class="up__posts_img-body" src="/assets/image/icon-add.png" />
+        <view class="up__posts_img-up">
+          重新上传
+        </view>
+      </view>
+    </view>
+    <view class="up__posts_topic-foot">
+      <view class="up__posts_topic-wrap">
+        <view class="up__posts_topic-name">
+          少年来一段文明的Freestyle可好
+        </view>
+      </view>
+      <view class="up__posts_upload">
+        立即发布
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class UpImage extends wepy.page {
+  config = {
+    navigationBarTitleText: '发布图文'
+  }
+  data = {
+  }
+}
+</script>

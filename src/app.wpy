@@ -1,0 +1,80 @@
+<style lang="less">
+@import './assets/style/ui.less';
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+import { setStore } from 'wepy-redux'
+import configStore from './store'
+
+const store = configStore()
+setStore(store)
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index',
+      'pages/follow',
+      'pages/topic-detail',
+      'pages/comment',
+      'pages/user',
+      'pages/up-image',
+      'pages/up-voice',
+      'pages/my-posts',
+      'pages/about',
+      'pages/voice'
+    ],
+    window: {
+      navigationBarBackgroundColor: '#ffffff',
+      navigationBarTextStyle: 'black',
+      navigationBarTitleText: 'HighFaner',
+      backgroundColor: '#ffffff',
+      backgroundTextStyle: 'dark',
+      enablePullDownRefresh: false,
+      onReachBottomDistance: 50
+    },
+    tabBar: {
+      color: '#c6c6c6',
+      selectedColor: '#212121',
+      backgroundColor: '#ffffff',
+      borderStyle: 'black',
+      position: 'bottom',
+      list: [{
+        pagePath: 'pages/index',
+        text: '首页',
+        iconPath: '/assets/image/home.png',
+        selectedIconPath: '/assets/image/home-active.png'
+      }, {
+        pagePath: 'pages/follow',
+        text: '关注',
+        iconPath: '/assets/image/follow.png',
+        selectedIconPath: '/assets/image/follow-active.png'
+      }, {
+        pagePath: 'pages/user',
+        text: '我的',
+        iconPath: '/assets/image/my.png',
+        selectedIconPath: '/assets/image/my-active.png'
+      }]
+    }
+  }
+
+  constructor() {
+    super()
+    this.use('requestfix')
+    this.use('promisify')
+  }
+
+  get welcome() {
+    return wepy.getStorageSync('__welcome__')
+  }
+
+  get session() {
+    return wepy.getStorageSync('__session__')
+  }
+
+  onLaunch() {
+  }
+}
+</script>

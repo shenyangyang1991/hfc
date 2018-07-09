@@ -1,0 +1,144 @@
+<style lang="less">
+@import "../../assets/style/base/fn.less";
+.share__comp_hide {
+
+  display: none!important;
+}
+.share__comp {
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  .flex-box();
+
+  align-items: flex-end;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  z-index: 99999;
+
+  background-color: rgba(0, 0, 0, 0.6);
+
+  .share__wrap {
+
+    .flex-box();
+
+    .box-center();
+
+    width: 690rpx;
+    height: 296rpx;
+
+    border-radius: 16rpx;
+    overflow: hidden;
+
+    background-color: @mainColor;
+
+    margin-bottom: 60rpx;
+
+    transform: translateY(356rpx);
+
+    .share__item {
+
+      flex: 1;
+
+      .flex-box(column);
+
+      .box-center();
+
+      .share__icon {
+
+        width: 72rpx;
+        height: 72rpx;
+
+        margin-bottom: 30rpx;
+      }
+
+      .share__name {
+
+        font-size: 24rpx;
+        color: @darkColor;
+
+        opacity: 0.6;
+      }
+    }
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+export default class Share extends wepy.component {
+  data = {
+    shares: [{
+      icon: '/assets/image/icon-wx.png',
+      name: '微信联系人',
+      type: 'share'
+    }, {
+      icon: '/assets/image/icon-juan.png',
+      name: '微信朋友圈',
+      url: '/pages/topic-share'
+    }],
+    reveal: false,
+    animationData: '',
+    offsetHeight: 0,
+    timer: null
+  }
+  methods = {
+    show() {
+      this.reveal = true
+      this.$apply()
+      if (this.timer) clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        const animation = wepy.createAnimation({
+          duration: 100
+        })
+        animation.translateY(0).step()
+        this.animationData = animation.export()
+        this.$apply()
+      }, 50)
+    },
+    hide() {
+      const animation = wepy.createAnimation({
+        duration: 100
+      })
+      animation.translateY(this.offsetHeight).step()
+      this.animationData = animation.export()
+      this.$apply()
+      if (this.timer) clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        this.reveal = false
+        this.$apply()
+      }, 100)
+    },
+    none() {}
+  }
+  onLoad() {
+    const sys = wepy.getSystemInfoSync()
+    this.offsetHeight = sys.windowWidth * (356 / 750)
+  }
+}
+</script>
+
+<template>
+  <view class="share__comp {{reveal ? '' : 'share__comp_hide'}}" @tap="hide">
+    <view class="share__wrap" animation="{{animationData}}" @tap.stop="none">
+      <view wx:for="{{shares}}" wx:key="unique" wx:for-index="index" wx:for-item="item" class="share__item">
+        <button wx:if="{{item.type}}" open-type="{{item.type}}" hover-class="none" class="share__item">
+          <image class="share__icon" src="{{item.icon}}" />
+          <view class="share__name">
+            {{item.name}}
+          </view>
+        </button>
+        <navigator url="{{item.url}}" wx:else class="share__item" hover-class="none">
+          <image class="share__icon" src="{{item.icon}}" />
+          <view class="share__name">
+            {{item.name}}
+          </view>
+        </navigator>
+      </view>
+    </view>
+  </view>
+</template>

@@ -1,0 +1,257 @@
+<style lang="less">
+@import '../../assets/style/base/fn.less';
+
+@title_font_size: 36rpx;
+@title_font_color: @darkColor;
+@val_font_size: 22rpx;
+@val_font_color: @darkColor;
+
+.topic__no_border {
+  border: 0;
+}
+
+.topic__comp {
+
+  padding: 30rpx 0;
+
+  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
+
+  .topic__head {
+
+    .flex-box();
+
+    .box-middle();
+
+    .topic__head_content {
+
+      flex: 1;
+
+      .topic__head_title {
+
+        .ellipsis(594rpx);
+
+        font-size: @title_font_size;
+        color: @title_font_color;
+        font-weight: @font_medium;
+      }
+
+      .topic__head_prop {
+        
+        .flex-box();
+
+        .box-middle();
+
+        padding-left: 6rpx;
+
+        .topic__head_prop-val {
+
+          font-size: @val_font_size;
+          color: @val_font_color;
+
+          opacity: 0.6;
+        }
+
+        .topic__head_prop-split {
+
+          padding: 0 10rpx;
+        }
+      }
+    }
+
+    .topic__head_followed {
+
+      width: 16rpx;
+      height: 28rpx;
+    }
+
+    .topic__head_follow {
+      
+      .flex-box();
+
+      .box-center();
+
+      width: 96rpx;
+      height: 56rpx;
+
+      font-size: @val_font_size;
+      color: @mainColor;
+
+      background-color: @blurColor;
+
+      border-radius: 160rpx;
+      overflow: hidden;
+    }
+  }
+
+  .topic__body {
+
+    .flex-box();
+
+    height: 276rpx;
+
+    padding: 30rpx 0;
+  }
+
+  .topic__foot {
+
+    .topic__label {
+
+      width: 176rpx;
+      height: 52rpx;
+
+      padding-top: 8rpx;
+
+      font-family: 'HFC';
+      font-size: 32rpx;
+      color: @darkColor;
+      text-align: center;
+
+      background-color: #f1f0f5;
+
+      border-radius: 200rpx;
+      overflow: hidden;
+    }
+  }
+}
+
+.posts__comp, .posts__content {
+
+  width: 216rpx;
+  height: 216rpx;
+}
+
+.posts__comp {
+
+  .posts__avatar_url {
+
+    .flex-box();
+
+    .box-center();
+
+    width: 216rpx;
+    height: 216rpx;
+
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    background-color: rgba(0,0,0,0.05);
+
+    .posts__icon_play {
+
+      width: 56rpx;
+      height: 56rpx;
+    }
+  }
+  .posts__poster {
+    background-color: rgba(0,0,0,0.05);
+  }
+  .posts__img {
+    width: 216rpx;
+    height: 216rpx;
+  }
+
+  .posts__txt {
+
+    width: 216rpx;
+    height: 216rpx;
+
+    padding: 20rpx;
+
+    background-color: rgba(0,0,0,0.05);
+
+    .posts__context {
+
+      margin-bottom: 20rpx;
+
+      font-size: @val_font_size;
+      color: @val_font_color;
+      text-align: justify;
+
+      .ellipsisLn(4);
+    }
+
+    .posts__username {
+
+      opacity: 0.6;
+
+      font-size: 18rpx;
+      color: @val_font_color;
+    }
+  }
+}
+
+.posts__center {
+
+  display: flex;
+  justify-content: center;
+
+  width: 258rpx;
+}
+</style>
+
+<template>
+  <view class="topic__comp {{index == 0 ? 'topic__no_border' : ''}}" @tap="toDetail">
+    <view class="topic__head">
+      <view class="topic__head_content">
+        <view class="topic__head_title">
+          {{topic.title}}
+        </view>
+        <view class="topic__head_prop">
+          <view class="topic__head_prop-val">
+            {{topic.people_cnt}}人参与
+          </view>
+          <view class="topic__head_prop-val topic__head_prop-split">
+            |
+          </view>
+          <view class="topic__head_prop-val">
+            {{topic.topic_cnt}}条动态
+          </view>
+        </view>
+      </view>
+      <view class="topic__head_follow" style="opacity: {{topic.following ? 0 : 1}};">
+        关注
+      </view>
+      <image hidden="{{!topic.following}}" class="topic__head_followed" src="../../assets/image/icon-next.png" />
+    </view>
+    <view class="topic__body">
+      <view wx:for="{{topic.topic_list}}" wx:key="unique" wx:for-index="i" wx:for-item="item" class="posts__comp {{i == 1 ? 'posts__center' : ''}}">
+        <view class="posts__poster" wx:if="{{item.poster}}">
+          <image class="posts__img" mode="aspectFill" src="{{item.poster}}" />
+        </view>
+        <view class="posts__voice" wx:elif="{{item.voice}}">
+          <view class="posts__avatar_url" style="background-image: url('{{item.user.avatar_url}}');">
+            <image class="posts__icon_play" src="../../assets/image/icon-play.png" />
+          </view>
+        </view>
+        <view class="posts__txt" wx:elif="{{item.title}}">
+          <view class="posts__context">
+            {{item.title}}
+          </view>
+          <view class="posts__username">
+            {{item.user.nick_name}}
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- <view class="topic__foot">
+      <view class="topic__label">
+        {{topic.hfc}} HFC
+      </view>
+    </view> -->
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Topic extends wepy.component {
+  props = ['topic', 'index']
+  methods = {
+    toDetail() {
+      wepy.navigateTo({
+        url: '/pages/topic-detail'
+      })
+    }
+  }
+}
+</script>

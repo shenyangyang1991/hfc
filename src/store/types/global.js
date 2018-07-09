@@ -1,0 +1,3 @@
+export const GLOBAL_LOGIN_STATE = 'GLOBAL_LOGIN_STATE'
+
+export const GLOBAL_SIGN_DAY = 'GLOBAL_SIGN_DAY'

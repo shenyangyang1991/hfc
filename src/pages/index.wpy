@@ -1,0 +1,195 @@
+<template>
+  <view class="page index__page">
+    <hero title="推荐" desc="全球精选热门频道" />
+    <view class="index__body">
+      <repeat for="{{topics}}" key="index" index="index" item="topic">
+        <topic :topic.sync="topic" :index.sync="index" />
+      </repeat>
+    </view>
+    <guide />
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { connect, getStore } from 'wepy-redux'
+import { login } from '@/store/actions'
+
+import { int2unit } from '@/utils/unit.js'
+
+import Hero from '@/components/topic/hero'
+import Topic from '@/components/topic/body'
+import Guide from '@/components/common/new-guide'
+
+const store = getStore()
+
+@connect({
+})
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '全球精选话题'
+  }
+
+  components = {
+    'hero': Hero,
+    'topic': Topic,
+    'guide': Guide
+  }
+
+  data = {
+    topics: []
+  }
+
+  async onLoad() {
+    // setTimeout(() => {
+    //   this.$invoke('guide', 'show', {
+    //     logo: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
+    //     name: '欢迎加入',
+    //     desc: '嗨范儿是全球的最大青年文化社交网络'
+    //   })
+    // }, 1000)
+    const code = await wepy.login()
+
+    await login({code: code.code, nick_name: '申杨杨', avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'})
+    const state = store.getState()
+    console.log(state)
+    this.topics = [{
+      id: '1',
+      title: '话题1',
+      people_cnt: int2unit(0),
+      topic_cnt: int2unit(0),
+      following: 1,
+      topic_list: [{
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        poster: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        voice: 'http://wx3.sinaimg.cn/mw690/006ZrXHXgy1fsr0qy8cp5g306z05mqqo.gif',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }]
+    }, {
+      id: '1',
+      title: '话题1',
+      people_cnt: int2unit(0),
+      topic_cnt: int2unit(0),
+      following: 1,
+      topic_list: [{
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        poster: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        voice: 'http://wx3.sinaimg.cn/mw690/006ZrXHXgy1fsr0qy8cp5g306z05mqqo.gif',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }]
+    }, {
+      id: '1',
+      title: '话题1',
+      people_cnt: int2unit(0),
+      topic_cnt: int2unit(0),
+      following: 1,
+      topic_list: [{
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        poster: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        voice: 'http://wx3.sinaimg.cn/mw690/006ZrXHXgy1fsr0qy8cp5g306z05mqqo.gif',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }]
+    }, {
+      id: '1',
+      title: '话题1',
+      people_cnt: int2unit(0),
+      topic_cnt: int2unit(0),
+      following: 1,
+      topic_list: [{
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        poster: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        voice: 'http://wx3.sinaimg.cn/mw690/006ZrXHXgy1fsr0qy8cp5g306z05mqqo.gif',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }]
+    }, {
+      id: '1',
+      title: '话题1',
+      people_cnt: int2unit(0),
+      topic_cnt: int2unit(0),
+      following: 1,
+      topic_list: [{
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        poster: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }, {
+        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
+        voice: 'http://wx3.sinaimg.cn/mw690/006ZrXHXgy1fsr0qy8cp5g306z05mqqo.gif',
+        user: {
+          nick_name: '申杨杨',
+          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
+        }
+      }]
+    }]
+  }
+}
+</script>
