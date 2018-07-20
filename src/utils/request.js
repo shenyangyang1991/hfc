@@ -1,45 +1,37 @@
 import wepy from 'wepy'
+import { setHeader, getCookie, responseHandler, setSession, checkSession, updateSession, setCookieHeader } from './request-tools'
 
-export default async function request(options) {
-  if (options.header) {
-    options.header['Content-Type'] = 'application/json'
+export const getSessionByRemote = async (options) => {
+  const response = await request(options)
+  const responseWrap = responseHandler(response)
+  return setSession(responseWrap)
+}
+
+export const http = async (options) => {
+  const wrap = {}
+  if (!checkSession()) {
+    wrap.status = '0004'
   } else {
-    options.header = {
-      'Content-Type': 'application/json'
+    updateSession()
+    options.header = setCookieHeader(options.header, getCookie())
+    const response = await request(options)
+    const responseWrap = responseHandler(response)
+    if (responseWrap.success) {
+      wrap.status = responseWrap.body.code
+      wrap.data = responseWrap.body.data
+    } else {
+      wrap.status = responseWrap.body.errCode
     }
   }
+  return wrap
+}
 
-  let err = {}
+const request = async (options) => {
+  options.header = setHeader(options.header)
   let response = {}
   try {
     response = await wepy.request(options)
   } catch (e) {
-    err.code = '0000'
-    err.message = '网络异常，请检查网络'
   }
-
-  if (response.statusCode === 200) {
-    let resp = response.data
-    if (resp) {
-      let {code, data, message} = resp
-      if (code === 200) {
-        return resp
-      } else if (code === 4003) { // 过期
-        err.code = '4003'
-        err.message = '我们有段时间没见了，快来一起玩'
-      } else {
-        err.code = '0001'
-        err.message = '发生什么事情了，我脑袋短路了'
-      }
-    }
-  } else if (response.statusCode === 404) {
-    err.code = '0002'
-    err.message = '您迷路了吗？'
-  } else if (response.statusCode === 500) {
-    err.code = '0003'
-    err.message = '您真会玩，我已经崩溃了'
-  } else {
-  }
-
-  return err
+  return response
 }

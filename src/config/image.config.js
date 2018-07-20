@@ -1,5 +1,8 @@
 export default {
-  myPoint: {
-    previewBg: '/my-point-preview-bg.png'
+  about: {
+    preview: '/preview/about/about_me.jpg'
+  },
+  none: {
+    icon: '/preview/none/face.jpg'
   }
 }

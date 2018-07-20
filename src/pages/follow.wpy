@@ -1,66 +1,91 @@
 <template>
   <view class="page index__page">
     <hero title="关注" desc="您关注的话题都在这里" />
-    <view class="index__body">
-      <repeat for="{{topics}}" key="index" index="index" item="topic">
-        <topic :topic.sync="topic" :index.sync="index" />
+    <view wx:if="{{followList && followList.length}}" class="index__body">
+      <repeat for="{{followList}}" key="index" index="index" item="topic">
+        <topic :topic.sync="topic" :index.sync="index" from="follow" />
       </repeat>
     </view>
+    <none wx:if="{{!followList || !followList.length}}" />
+    <login-modal />
+    <error-modal />
   </view>
 </template>
 
 <script>
 import wepy from 'wepy'
-import { connect } from 'wepy-redux'
+import { connect, getStore } from 'wepy-redux'
+import { FOLLOW_SUBJECT_LIST } from '@/store/types'
 
-import { int2unit } from '@/utils/unit.js'
+import subject from '@/mixins/subject'
+import welcome from '@/mixins/welcome'
+import error from '@/mixins/error'
+import next from '@/mixins/next'
 
 import Hero from '@/components/topic/hero'
 import Topic from '@/components/topic/body'
+import UserGuide from '@/components/common/new-guide'
+import ErrorToast from '@/components/common/toast'
+import None from '@/components/common/none'
+
+import Config from '@/config/index'
+import { http } from '@/utils/request'
+
+const store = getStore()
 
 @connect({
+  followList(state) {
+    return state.subject.followList
+  }
 })
 
 export default class Follow extends wepy.page {
   config = {
-    navigationBarTitleText: '您关注的话题'
+    navigationBarTitleText: '',
+    enablePullDownRefresh: true
   }
   components = {
     'hero': Hero,
-    'topic': Topic
+    'topic': Topic,
+    'login-modal': UserGuide,
+    'error-modal': ErrorToast,
+    'none': None
   }
 
-  data = {
-    topics: []
+  mixins = [welcome, error, next, subject]
+
+  async getSubjectList() {
+    const responseWrap = await http({
+      url: `${Config.api.subject.follow.url}?page=${this.page}&next=${this.next}`,
+      method: Config.api.subject.follow.method
+    })
+    let list = []
+    if (responseWrap.status === '200') {
+      list = responseWrap.data.list
+      if (list.length === 10) {
+        this.isHasNext = true
+      } else {
+        this.isHasNext = false
+      }
+    }
+
+    return list || []
+  }
+
+  async nextPage() {
+    let subjectList = await this.getSubjectList()
+    subjectList = this.listHandler(subjectList)
+    const list = [].concat(this.followList).concat(subjectList)
+    store.dispatch({ type: FOLLOW_SUBJECT_LIST, payload: { list } })
+  }
+  async ready() {
+    // 正常进入
+    let subjectList = await this.getSubjectList()
+    subjectList = this.listHandler(subjectList)
+    store.dispatch({ type: FOLLOW_SUBJECT_LIST, payload: { list: subjectList } })
   }
 
   onLoad() {
-    this.topics = [{
-      id: '1',
-      title: '话题1',
-      people_cnt: int2unit(0),
-      topic_cnt: int2unit(11),
-      following: 1,
-      topic_list: [{
-        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
-        user: {
-          nick_name: '申杨杨',
-          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
-        }
-      }, {
-        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
-        user: {
-          nick_name: '申杨杨',
-          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
-        }
-      }, {
-        title: '我就是喜欢那首送乐团的Life is struggle，可惜天妒英才',
-        user: {
-          nick_name: '申杨杨',
-          avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
-        }
-      }]
-    }]
   }
 }
 </script>

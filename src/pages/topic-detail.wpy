@@ -1,6 +1,6 @@
 <template>
   <view class="page topic__detail_page">
-    <image class="topic__detail_poster" mode="aspectFill" src="{{topic.poster}}" />
+    <image class="topic__detail_poster" mode="aspectFill" src="{{topic.poster}}?imageView2/1/w/375/h/188" />
     <view class="topic__detail_preview">
       <view class="topic__detail_title">
         {{topic.title}}
@@ -15,40 +15,36 @@
         <view class="topic__detail_val">
           {{topic.topic_cnt}}条动态
         </view>
-        <!-- <view class="topic__detail_split">
-          |
-        </view>
-        <view class="topic__detail_val">
-          价值 {{topic.hfc}} HFC
-        </view> -->
       </view>
       <view class="topic__detail_btns">
-        <view class="topic__detail_btn topic__detail_follow">
-          关注话题
+        <view class="topic__detail_btn topic__detail_follow" @tap="follower">
+          {{topic.following ? '取消关注' : '关注话题'}}
         </view>
-        <view class="topic__detail_btn topic__detail_share" @tap="invite">
+        <button open-type="share" hover-class="none" class="topic__detail_btn topic__detail_share">
           邀请好友
-        </view>
+        </button>
       </view>
     </view>
     <view class="detail__body">
       <repeat for="{{posts}}" key="index" index="index" item="post">
-        <posts :posts.sync="post" :index.sync="index" />
+        <posts :post.sync="post" :index.sync="index" />
       </repeat>
     </view>
-    <view class="topic__detail_join">
-      <navigator url="/pages/up-image" class="topic__detail_i">
+    <view wx:if="{{isUp}}" class="topic__detail_join" style="bottom: {{model === 'iPhone X' ? 60 : 0}}rpx;">
+      <navigator url="/pages/up-image?subject_id={{id}}&title={{topic.title}}" class="topic__detail_i">
         <image class="topic__detail_i-icon" src="/assets/image/icon-img.png" />
         <view class="topic__detail_i-name">发布图文</view>
       </navigator>
-      <view class="topic__detail_i-split">
+      <!-- <view class="topic__detail_i-split">
       </view>
-      <navigator url="/pages/up-voice" class="topic__detail_i">
+      <navigator url="/pages/voice?subject_id={{id}}&title={{topic.title}}" class="topic__detail_i">
         <image class="topic__detail_i-icon" src="/assets/image/icon-voice.png" />
         <view class="topic__detail_i-name">上传语音</view>
-      </navigator>
+      </navigator> -->
     </view>
     <share />
+    <login-modal />
+    <error-modal />
   </view>
 </template>
 
@@ -58,26 +54,52 @@ import wepy from 'wepy'
 import Posts from '@/components/topic/posts'
 import Share from '@/components/common/share'
 
+import welcome from '@/mixins/welcome'
+import error from '@/mixins/error'
+
+import { format, int2unit } from '@/utils/unit'
+
+import Config from '@/config/index'
+import { http } from '@/utils/request'
+
+import UserGuide from '@/components/common/new-guide'
+import ErrorToast from '@/components/common/toast'
+
 export default class TopicDetail extends wepy.page {
   config = {
-    navigationBarTitleText: '话题详情'
+    navigationBarTitleText: '话题详情',
+    enablePullDownRefresh: true
   }
 
   onShareAppMessage() {
     return {
-      title: '有种来一段文明的说唱',
-      path: '/pages/topic-detail'
+      title: this.topic.title,
+      path: `/pages/topic-detail?id=${this.id}`,
+      imageUrl: `${this.topic.share}?imageView2/1/w/500/h/400`
     }
   }
 
   components = {
     'posts': Posts,
-    'share': Share
+    'share': Share,
+    'login-modal': UserGuide,
+    'error-modal': ErrorToast
   }
+
+  mixins = [welcome, error]
 
   events = {
     'share-event'() {
       this.share()
+    },
+    'like-event'(index, like) {
+      this.posts[index].like = like
+      if (like) {
+        this.posts[index].like_cnt ++
+      } else {
+        this.posts[index].like_cnt --
+      }
+      this.$apply()
     }
   }
 
@@ -88,27 +110,107 @@ export default class TopicDetail extends wepy.page {
   methods = {
     invite() {
       this.share()
+    },
+    follower() {
+      const following = this.topic.following ? 0 : 1
+      this.topic.following = following
+      this.$apply()
     }
   }
 
   data = {
-    topic: {
-      poster: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1531066582384&di=ae910ee9cca76e6f4aa14c843984a673&imgtype=0&src=http%3A%2F%2Fwx2.sinaimg.cn%2Fwap720%2F84f12de0ly1fhl55ctnzfj210y0ku42u.jpg',
-      title: '话题1',
-      people_cnt: '13K',
-      topic_cnt: '11K'
-    },
-    posts: [{
-      id: '1',
-      title: '还有一个月才开我的暑假生活',
-      user: {
-        nick_name: '申杨杨',
-        avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
-      },
-      poster: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
-      like: false,
-      like_cnt: '10K'
-    }]
+    topic: {},
+    posts: [],
+    id: 0,
+    following: undefined,
+    isHasNext: true,
+    next: 0,
+    model: '',
+    isUp: false
+  }
+
+  async onPullDownRefresh() {
+    this.next = 0
+    this.following = undefined
+    try {
+      await this.ready()
+    } catch (error) {
+    } finally {
+      wepy.stopPullDownRefresh()
+    }
+  }
+
+  async onReachBottom() {
+    if (this.isHasNext) {
+      await this.nextPage()
+    }
+  }
+
+  async ready() {
+    // 请求接口
+    const responseWrap = await http({
+      url: `${Config.api.subject.subject.url}?subject_id=${this.id}`,
+      method: Config.api.subject.subject.method
+    })
+    if (responseWrap.status === '200') {
+      this.topic = responseWrap.data || {}
+      this.topic.people_cnt = int2unit(this.topic.people_cnt)
+      this.topic.topic_cnt = int2unit(this.topic.topic_cnt)
+      this.isUp = this.topic.is_up
+      this.following = this.topic.following
+      this.$apply()
+    }
+    const list = await this.getList()
+    this.posts = list
+    this.$apply()
+  }
+
+  async getList() {
+    const responseWrap = await http({
+      url: `${Config.api.subject.topic.url}?subject_id=${this.id}&page=${this.next}`,
+      method: Config.api.subject.topic.method
+    })
+    let list = []
+    if (responseWrap.status === '200') {
+      list = responseWrap.data.list
+      list.forEach((item, index) => {
+        list[index]['create_time'] = format(item['create_time'])
+        if (list[index]['voice']) {
+          list[index]['voice'] = decodeURIComponent(item['voice'])
+        }
+      })
+      if (list.length === 10) {
+        this.isHasNext = true
+      } else {
+        this.isHasNext = false
+      }
+    }
+
+    return list || []
+  }
+
+  async nextPage() {
+    this.next ++
+    const list = await this.getList()
+    this.posts = [].concat(this.posts).concat(list)
+    this.$apply()
+  }
+
+  onLoad(options) {
+    this.id = options.id
+    const sys = wepy.getSystemInfoSync()
+    this.model = sys.model
+  }
+
+  onUnload() {
+    if (this.following !== this.topic.following) {
+      // 变化
+      http({
+        url: Config.api.subject.follower.url,
+        method: Config.api.subject.follower.method,
+        data: { subject_id: this.topic.id, following: String(this.topic.following) }
+      })
+    }
   }
 }
 </script>

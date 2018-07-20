@@ -92,6 +92,10 @@
     padding: 30rpx 0;
   }
 
+  .topic__body_empty {
+    background-color: rgba(0,0,0,0.05);
+  }
+
   .topic__foot {
 
     .topic__label {
@@ -190,7 +194,7 @@
 </style>
 
 <template>
-  <view class="topic__comp {{index == 0 ? 'topic__no_border' : ''}}" @tap="toDetail">
+  <view class="topic__comp {{index == 0 ? 'topic__no_border' : ''}}" @tap.stop="toDetail">
     <view class="topic__head">
       <view class="topic__head_content">
         <view class="topic__head_title">
@@ -208,7 +212,7 @@
           </view>
         </view>
       </view>
-      <view class="topic__head_follow" style="opacity: {{topic.following ? 0 : 1}};">
+      <view class="topic__head_follow" style="{{topic.following ? 'display: none;' : ''}}" @tap.stop="follower">
         关注
       </view>
       <image hidden="{{!topic.following}}" class="topic__head_followed" src="../../assets/image/icon-next.png" />
@@ -216,7 +220,7 @@
     <view class="topic__body">
       <view wx:for="{{topic.topic_list}}" wx:key="unique" wx:for-index="i" wx:for-item="item" class="posts__comp {{i == 1 ? 'posts__center' : ''}}">
         <view class="posts__poster" wx:if="{{item.poster}}">
-          <image class="posts__img" mode="aspectFill" src="{{item.poster}}" />
+          <image class="posts__img" mode="aspectFill" src="{{item.poster}}?imageView2/1/w/216/h/216" />
         </view>
         <view class="posts__voice" wx:elif="{{item.voice}}">
           <view class="posts__avatar_url" style="background-image: url('{{item.user.avatar_url}}');">
@@ -233,11 +237,6 @@
         </view>
       </view>
     </view>
-    <!-- <view class="topic__foot">
-      <view class="topic__label">
-        {{topic.hfc}} HFC
-      </view>
-    </view> -->
   </view>
 </template>
 
@@ -245,12 +244,15 @@
 import wepy from 'wepy'
 
 export default class Topic extends wepy.component {
-  props = ['topic', 'index']
+  props = ['topic', 'index', 'from']
   methods = {
     toDetail() {
       wepy.navigateTo({
-        url: '/pages/topic-detail'
+        url: `/pages/topic-detail?id=${this.topic.id}`
       })
+    },
+    follower() {
+      this.$emit('follower', this.index, this.topic.id, this.topic.following)
     }
   }
 }

@@ -103,10 +103,9 @@
   }
 }
 </style>
-
 <script>
 import wepy from 'wepy'
-export default class NewGuide extends wepy.component {
+export default class ErrorGuide extends wepy.component {
   data = {
     reveal: false,
     guide: {},
@@ -128,7 +127,9 @@ export default class NewGuide extends wepy.component {
         this.$apply()
       }, 50)
     },
-    hide() {
+    hide(e) {
+      const userinfo = e.detail.userInfo
+      this.$emit('login-event', {nick_name: userinfo.nickName, avatar_url: userinfo.avatarUrl})
       const animation = wepy.createAnimation({
         duration: 100
       })
@@ -139,6 +140,8 @@ export default class NewGuide extends wepy.component {
       this.timer = setTimeout(() => {
         this.reveal = false
         this.guide = {}
+        this.animationData = null
+        this.timer = null
         this.$apply()
       }, 100)
     }
@@ -160,9 +163,9 @@ export default class NewGuide extends wepy.component {
           {{guide.desc}}
         </view>
       </view>
-      <view class="new__guide_yes" @tap="hide">
-        我知道了
-      </view>
+      <button class="new__guide_yes" open-type="getUserInfo" @getuserinfo="hide">
+        {{guide.btn}}
+      </button>
     </view>
   </view>
 </template>

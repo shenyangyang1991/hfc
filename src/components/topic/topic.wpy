@@ -1,0 +1,77 @@
+<template>
+  <view class="topic__comp_container" @tap="web">
+    <view class="topic__comp_posterwrap">
+      <view class="topic__comp_label">编辑精选</view>
+      <image class="topic__comp_poster" mode="scaleToFill" src="{{topic.img_url}}" />
+    </view>
+    <view class="topic__comp_title">{{topic.title}}</view>
+    <view class="topic__comp_labelgroup">
+      <view class="topic__comp_label">嗨范儿官方</view>
+      /
+      <view class="topic__comp_label">{{topic.look_num}}次浏览</view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Topic extends wepy.component {
+  props = ['topic']
+  methods = {
+    web() {
+      wepy.navigateTo({
+        url: `/pages/web-view?url=${this.topic.url}`
+      })
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .topic__comp_container {
+    padding: 0 0 30rpx;
+
+    .topic__comp_posterwrap {
+      position: relative;
+      width: 690rpx;
+      height: 390rpx;
+      border-radius: 16rpx;
+      overflow: hidden;
+
+      .topic__comp_label {
+        position: absolute;
+        top: 30rpx;
+        left: 30rpx;
+        background:#ffffff;
+        border-radius: 6rpx;
+        width: 108rpx;
+        height: 48rpx;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        font-size: 22rpx;
+        color: #000;
+      }
+
+      .topic__comp_poster {
+        width: 690rpx;
+        height: 390rpx;
+      }
+    }
+
+    .topic__comp_title {
+      padding: 5rpx 0;
+      font-size: 36rpx;
+      color:#212121;
+      font-weight: 500;
+    }
+
+    .topic__comp_labelgroup {
+      opacity:0.6;
+      font-size: 22rpx;
+      color:#212121;
+      display: flex;
+    }
+  }
+</style>

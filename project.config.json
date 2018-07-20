@@ -1,14 +1,14 @@
 {
 	"description": "hfc",
 	"setting": {
-		"urlCheck": false,
+		"urlCheck": true,
 		"es6": false,
 		"postcss": false,
 		"minified": false,
 		"newFeature": true
 	},
 	"compileType": "miniprogram",
-	"appid": "wxf4ae9ddb9ec77f2e",
+	"appid": "wx7eadfe14c9a883da",
 	"projectname": "wx",
 	"miniprogramRoot": "./dist",
 	"libVersion": "2.1.1",

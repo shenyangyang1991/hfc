@@ -5,15 +5,17 @@
         动态
       </view>
       <view class="my__posts_head-desc">
-        共生产12K条内容
+        共生产{{total}}条内容
       </view>
     </view>
 
     <view class="my__posts_body">
       <repeat for="{{posts}}" key="index" index="index" item="post">
-        <posts :posts.sync="post" :index="index" />
+        <posts :post.sync="post" :index.sync="index" />
       </repeat>
     </view>
+    <login-modal />
+    <error-modal />
   </view>
 </template>
 
@@ -22,47 +24,86 @@ import wepy from 'wepy'
 
 import Posts from '@/components/topic/posts'
 
+import { format, int2unit } from '@/utils/unit'
+
+import welcome from '@/mixins/welcome'
+import error from '@/mixins/error'
+
+import Config from '@/config/index'
+import { http } from '@/utils/request'
+
+import UserGuide from '@/components/common/new-guide'
+import ErrorToast from '@/components/common/toast'
+
 export default class MyPosts extends wepy.page {
   config = {
     navigationBarTitleText: '我的动态'
   }
   components = {
-    'posts': Posts
+    'posts': Posts,
+    'login-modal': UserGuide,
+    'error-modal': ErrorToast
   }
+  mixins = [welcome, error]
   data = {
-    posts: [{
-      id: '1',
-      title: '还有一个月才开我的暑假生活',
-      nick_name: '申杨杨',
-      avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
-      content_file: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
-      hfc: '10K',
-      like: false,
-      likes: '10K',
-      comments: [{
-        nick_name: '王博超',
-        context: 'cool'
-      }, {
-        nick_name: '王博超',
-        context: 'cool'
-      }]
-    }, {
-      id: '2',
-      title: '还有一个月才开我的暑假生活',
-      nick_name: '申杨杨',
-      avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
-      content_file: 'http://pic14.photophoto.cn/20100127/0036036848818577_b.jpg',
-      hfc: '10K',
-      likes: '10K',
-      like: true,
-      comments: [{
-        nick_name: '王博超',
-        context: 'cool'
-      }, {
-        nick_name: '王博超',
-        context: 'cool'
-      }]
-    }]
+    posts: [],
+    total: 0,
+    next: 0,
+    isHasNext: true
+  }
+  async getList() {
+    const responseWrap = await http({
+      url: `${Config.api.user.topic.url}?page=${this.next}`,
+      method: Config.api.user.topic.method
+    })
+    let topicJO = {}
+    if (responseWrap.status === '200') {
+      topicJO = responseWrap.data
+      topicJO.total = int2unit(topicJO.total)
+      topicJO.list.forEach((item, index) => {
+        topicJO.list[index]['create_time'] = format(item['create_time'])
+      })
+      if (topicJO.list.length === 10) {
+        this.isHasNext = true
+      } else {
+        this.isHasNext = false
+      }
+    }
+
+    return topicJO
+  }
+  events = {
+    'like-event'(index, like) {
+      this.posts[index].like = like
+      if (like) {
+        this.posts[index].like_cnt ++
+      } else {
+        this.posts[index].like_cnt --
+      }
+      this.$apply()
+    }
+  }
+  async nextPage() {
+    this.next++
+    const jo = await this.getList()
+    const { list, total } = jo
+    this.total = total
+    this.posts = [].concat(this.posts).concat(list)
+    this.$apply()
+  }
+  async ready() {
+    const topic = await this.getList()
+    this.total = topic.total || 0
+    this.posts = topic.list || []
+    this.$apply()
+  }
+  async onLoad() {
+    await this.ready()
+  }
+  async onReachBottom() {
+    if (this.isHasNext) {
+      await this.nextPage()
+    }
   }
 }
 </script>

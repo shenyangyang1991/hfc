@@ -63,19 +63,19 @@
 </style>
 
 <template>
-  <view class="comment__item_comp {{index == 0 ? 'comment__item_no-border' : ''}}">
-    <image class="comment__item_face" src="{{comment.avatar_url}}" />
+  <view class="comment__item_comp {{index == 0 ? 'comment__item_no-border' : ''}}" @tap="reply">
+    <image class="comment__item_face" src="{{comment.user.avatar_url}}" />
     <view class="comment__item_content">
       <view class="comment__item_name">
-        {{comment.nick_name}}
+        {{comment.user.nick_name}}
       </view>
       <view class="comment__item_text">
-        <view wx:if="{{comment.reply_name}}" class="comment__item_friend">回复{{comment.reply_name}}：</view>
-        {{comment.context}}
+        <view wx:if="{{comment.reply.nick_name}}" class="comment__item_friend">回复{{comment.reply.nick_name}}：</view>
+        {{comment.title}}
       </view>
     </view>
     <view class="comment__item_time">
-      {{comment.time}}
+      {{comment.create_time}}
     </view>
   </view>
 </template>
@@ -84,5 +84,10 @@
 import wepy from 'wepy'
 export default class CommentItem extends wepy.component {
   props = ['comment', 'index']
+  methods = {
+    reply() {
+      this.$emit('reply-event', this.comment.user)
+    }
+  }
 }
 </script>

@@ -1,0 +1,119 @@
+<template>
+  <view class="page index__page">
+    <hero title="猛料" desc="全网最热嘻哈猛料推荐" />
+    <view class="index__body" style="padding-top: 194rpx;">
+      <repeat for="{{list}}" key="index" index="index" item="topic">
+        <topic :topic.sync="topic" />
+      </repeat>
+    </view>
+    <login-modal />
+    <error-modal />
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import welcome from '@/mixins/welcome'
+import error from '@/mixins/error'
+
+import Hero from '@/components/topic/hero'
+import Topic from '@/components/topic/topic'
+import UserGuide from '@/components/common/new-guide'
+import ErrorToast from '@/components/common/toast'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '',
+    enablePullDownRefresh: true
+  }
+
+  data = {
+    list: [],
+    isHasNext: true,
+    page: 1
+  }
+
+  components = {
+    'hero': Hero,
+    'topic': Topic,
+    'login-modal': UserGuide,
+    'error-modal': ErrorToast
+  }
+
+  onShareAppMessage() {
+    return {
+      title: '年轻人都在玩儿的',
+      path: `/pages/index`,
+      imageUrl: 'http://cdn.hfc.highfaner.com/preview/share/invitation_firend.jpg?imageView2/1/w/500/h/400'
+    }
+  }
+
+  mixins = [welcome, error]
+
+  async getSubjectList() {
+    const response = await wepy.request({
+      url: 'https://safe.api.open.highfaner.com/Cms/Cms/get_cms_list',
+      data: {
+        page: this.page,
+        rows: 10
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      method: 'post'
+    })
+    let list = []
+    if (response.statusCode === 200) {
+      const data = response.data
+      if (data.code === '1') {
+        list = data.data.list
+        if (list.length === 10) {
+          this.isHasNext = true
+        } else {
+          this.isHasNext = false
+        }
+      }
+    }
+
+    return list || []
+  }
+
+  events = {
+    async follower(index, subjectId, following) {
+    }
+  }
+  async ready() {
+    // 正常进入
+    wepy.showLoading({
+      title: '加载中...'
+    })
+    const subjectList = await this.getSubjectList()
+    wepy.hideLoading()
+    this.list = subjectList
+    this.$apply()
+  }
+
+  async onReachBottom() {
+    if (this.isHasNext) {
+      this.setNext()
+      await this.nextPage()
+    }
+  }
+
+  setNext() {
+    if (this.isHasNext) {
+      this.page ++
+    }
+  }
+
+  async nextPage() {
+    const subjectList = await this.getSubjectList()
+    const list = [].concat(this.list).concat(subjectList)
+    this.list = list
+    this.$apply()
+  }
+
+  async onLoad() {
+  }
+}
+</script>

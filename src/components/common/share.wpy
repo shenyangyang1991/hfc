@@ -79,7 +79,7 @@ export default class Share extends wepy.component {
     }, {
       icon: '/assets/image/icon-juan.png',
       name: '微信朋友圈',
-      url: '/pages/topic-share'
+      url: '/pages/subject-share'
     }],
     reveal: false,
     animationData: '',
@@ -110,6 +110,8 @@ export default class Share extends wepy.component {
       if (this.timer) clearTimeout(this.timer)
       this.timer = setTimeout(() => {
         this.reveal = false
+        this.animationData = null
+        this.timer = null
         this.$apply()
       }, 100)
     },

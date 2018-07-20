@@ -1,0 +1,102 @@
+<style lang="less">
+@import "../../assets/style/base/fn.less";
+
+@toast__font: 30rpx; /** 字体大小 **/
+@toast__color: #ffffff; /** 字体颜色 **/
+
+  .toast__comp {
+    /** 隐藏 **/
+    display: none;
+
+    .toast__bd {
+      /** 布局 **/
+      .flex-box(column);
+      /** 居中 **/
+      .box-center();
+      /** 定位 **/
+      position: fixed;
+      z-index: 5000;
+      /** 定位位置 **/
+      top: 50%;
+      left: 50%;
+      /** 尺寸 **/
+      width: 630rpx;
+      height: 176rpx;
+      /** 字体 **/
+      font-size: @toast__font;
+      color: @toast__color;
+      /** 位置偏移 **/
+      transform: translateX(-50%) translateY(-50%);
+      /** 圆角 **/
+      border-radius: 16rpx;
+      /** 背景色 **/
+      background-color: rgba(0, 0, 0, .6);
+      /** 文字 **/
+      .text_wrap();
+
+      opacity: 0;
+    }
+  }
+  .toast__comp_show {
+    /** 显示 **/
+    display: block;
+  }
+</style>
+
+<template>
+  <view class="toast__comp {{reveal ? 'toast__comp_show' : ''}}">
+    <view class="toast__bd" animation="{{animationData}}">
+      {{message}}
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Toast extends wepy.component {
+  data = {
+    reveal: false,
+    message: '',
+    animationData: '',
+    timer: null
+  }
+  handler(message) {
+    this.message = message
+    this.reveal = !!message
+    this.animationData = ''
+    this.timer = null
+    this.$apply()
+  }
+  animate(val) {
+    const animation = wepy.createAnimation({
+      duration: 100
+    })
+    animation.opacity(val).step()
+    this.animationData = animation.export()
+    this.$apply()
+  }
+  showFn(message) {
+    this.handler(message)
+    if (this.timer) clearTimeout(this.timer)
+    this.timer = setTimeout(() => {
+      this.animate(1)
+    }, 50)
+  }
+  hideFn() {
+    this.$emit('error-clean')
+    this.animate(0)
+    if (this.timer) clearTimeout(this.timer)
+    this.timer = setTimeout(() => {
+      this.handler()
+    }, 100)
+  }
+  methods = {
+    show(message) {
+      this.showFn(message)
+      setTimeout(() => {
+        this.hideFn()
+      }, 1800)
+    }
+  }
+}
+</script>

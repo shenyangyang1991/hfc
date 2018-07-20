@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
-import counter from './global'
+import subject from './subject'
 
 export default combineReducers({
-  global
+  subject
 })

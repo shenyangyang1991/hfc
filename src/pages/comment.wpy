@@ -5,85 +5,176 @@
         评论
       </view>
       <view class="comment__head_desc">
-        共{{comments.total}}条评论
+        共{{total}}条评论
       </view>
     </view>
     <view class="comment__body">
-      <scroll-view style="height: {{scrollHeight}}px;" scroll-y>
-        <repeat for="{{comments.list}}" key="index" index="index" item="comment">
+      <scroll-view style="height: {{scrollHeight}}px;" scroll-y bindscrolltolower="page">
+        <repeat for="{{comments}}" key="index" index="index" item="comment">
           <comment-item :comment.sync="comment" :index.sync="index" />
         </repeat>
       </scroll-view>
     </view>
-    <view class="comment__comments">
-      <form>
+    <view class="comment__comments" style="height: {{model === 'iPhone X' ? 168 : 108}}rpx; padding: 0 30rpx {{model === 'iPhone X' ? 60 : 0}}rpx;">
+      <form @submit="comment">
         <view class="comment__form_wrap">
           <image class="comment__avatar_url" src="{{user.avatar_url}}" />
           <view class="comment__form">
-            <input class="comment__input" cursor-spacing="{{inputPadding}}" type="text" placeholder="说点什么吧" placeholder-style="color: #9b9b9b;" />
-            <button class="comment__submit" formType="submit">发送</button>
+            <view hidden="{{!reply.nick_name}}" class="comment__reply" @tap="cancel">
+              @{{reply.nick_name}}：
+            </view>
+            <input name="inputtext" @input="input" value="{{value}}" class="comment__input" focus="{{focus}}" cursor-spacing="{{inputPadding}}" type="text" placeholder="说点什么吧" placeholder-style="color: #9b9b9b;" />
+            <button class="comment__submit" hover-class="none" formType="submit">发送</button>
           </view>
         </view>
       </form>
     </view>
+    <login-modal />
+    <error-modal />
   </view>
 </template>
 
 <script>
 import wepy from 'wepy'
 
+import welcome from '@/mixins/welcome'
+
 import CommentItem from '@/components/comment/item'
+
+import { getUserInfo } from '@/utils/global'
+
+import Config from '@/config/index'
+import { http } from '@/utils/request'
+
+import UserGuide from '@/components/common/new-guide'
+import ErrorToast from '@/components/common/toast'
+
+import { format, int2unit } from '@/utils/unit'
 
 export default class Comment extends wepy.page {
   config = {
     navigationBarTitleText: '查看评论'
   }
+  mixins = [welcome]
   data = {
     winWidth: 0,
     winHeight: 0,
     scrollHeight: 0,
     inputPadding: 0,
+    total: 0,
     comments: [],
-    user: {
-      nick_name: '申杨杨',
-      avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132'
-    }
+    user: {},
+    topicId: '',
+    next: 0,
+    isHasNext: true,
+    focus: '',
+    reply: {},
+    value: '',
+    model: ''
   }
   components = {
-    'comment-item': CommentItem
+    'comment-item': CommentItem,
+    'login-modal': UserGuide,
+    'error-modal': ErrorToast
   }
   realSize(size) {
     return this.winWidth / 750 * size
   }
-  onLoad() {
-    let sys = wepy.getSystemInfoSync()
+  events = {
+    'reply-event'(user) {
+      this.reply = user
+      this.$apply()
+    }
+  }
+  methods = {
+    async page() {
+      if (this.isHasNext) {
+        await this.nextPage()
+      }
+    },
+    async comment(e) {
+      const { inputtext } = e.detail.value
+      if (inputtext) {
+        const param = {
+          topic_id: this.topicId,
+          title: inputtext
+        }
+        if (this.reply.id) {
+          param['reply_id'] = this.reply.id
+        }
+        const responseWrap = await http({
+          url: Config.api.subject.comment.url,
+          method: Config.api.subject.comment.method,
+          data: param
+        })
+        if (responseWrap.status === '200') {
+          const comment = responseWrap.data
+          comment.create_time = format(comment.create_time)
+          this.comments.unshift(comment)
+          this.total ++
+          this.value = ''
+          this.$apply()
+        }
+      }
+    },
+    cancel() {
+      this.reply = {}
+      this.$apply()
+    },
+    input(e) {
+      const { inputtext } = e.detail.value
+      this.value = inputtext
+    }
+  }
+  async nextPage() {
+    this.next++
+    const jo = await this.getList()
+    const { list, total } = jo
+    this.total = total
+    this.comments = [].concat(this.comments).concat(list)
+    this.$apply()
+  }
+  onLoad(options) {
+    this.topicId = options['topic_id']
+    this.focus = options['focus']
+    const sys = wepy.getSystemInfoSync()
+    this.model = sys.model
     this.winWidth = sys.windowWidth || 750
     this.winHeight = sys.windowHeight || 1334
-    this.scrollHeight = this.winHeight - this.realSize(108) - this.realSize(215)
+    let scrollHeight = this.winHeight - this.realSize(108) - this.realSize(215)
+    if (this.model === 'iPhone X') scrollHeight -= this.realSize(60)
+    this.scrollHeight = scrollHeight
     this.inputPadding = this.realSize(27)
-
-    this.comments = {
-      total: 3,
-      list: [{
-        nick_name: '申杨杨',
-        avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
-        reply_name: '',
-        context: '评论1',
-        time: '11:00'
-      }, {
-        nick_name: '申杨杨',
-        avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
-        reply_name: '王博超',
-        context: '评论1',
-        time: '11:00'
-      }, {
-        nick_name: '申杨杨',
-        avatar_url: 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNMn9LbPuI5dbk1DcFAT69A8iaolzTNkrYakIq6Eu5ndPM0PtHDGWl0ibh0WHEUemkQsW9lGYVJQgA/132',
-        reply_name: '王博超',
-        context: '评论1',
-        time: '11:00'
-      }]
+    this.user = getUserInfo()
+  }
+  async getList() {
+    const responseWrap = await http({
+      url: `${Config.api.subject.commentlist.url}?topic_id=${this.topicId}&page=${this.next}`,
+      method: Config.api.subject.commentlist.method
+    })
+    let commentJO = {}
+    if (responseWrap.status === '200') {
+      commentJO = responseWrap.data
+      commentJO.total = int2unit(commentJO.total)
+      commentJO.list.forEach((item, index) => {
+        commentJO.list[index]['create_time'] = format(item['create_time'])
+      })
+      if (commentJO.list.length === 10) {
+        this.isHasNext = true
+      } else {
+        this.isHasNext = false
+      }
     }
+    return commentJO
+  }
+  async ready() {
+    const comment = await this.getList()
+    this.comments = comment.list
+    this.total = comment.total
+    this.$apply()
+  }
+  async onShow() {
+    await this.ready()
   }
 }
 </script>

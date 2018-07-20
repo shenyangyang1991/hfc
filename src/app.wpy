@@ -9,6 +9,8 @@ import 'wepy-async-function'
 import { setStore } from 'wepy-redux'
 import configStore from './store'
 
+import { SESSION_KEY, SIGN_KEY } from './constant/global'
+
 const store = configStore()
 setStore(store)
 
@@ -17,19 +19,19 @@ export default class extends wepy.app {
     pages: [
       'pages/index',
       'pages/follow',
+      'pages/find',
       'pages/topic-detail',
       'pages/comment',
       'pages/user',
       'pages/up-image',
-      'pages/up-voice',
       'pages/my-posts',
       'pages/about',
-      'pages/voice'
+      'pages/web-view'
     ],
     window: {
       navigationBarBackgroundColor: '#ffffff',
       navigationBarTextStyle: 'black',
-      navigationBarTitleText: 'HighFaner',
+      navigationBarTitleText: '',
       backgroundColor: '#ffffff',
       backgroundTextStyle: 'dark',
       enablePullDownRefresh: false,
@@ -67,11 +69,14 @@ export default class extends wepy.app {
   }
 
   get welcome() {
-    return wepy.getStorageSync('__welcome__')
+    return wepy.getStorageSync(SIGN_KEY)
   }
 
   get session() {
-    return wepy.getStorageSync('__session__')
+    return wepy.getStorageSync(SESSION_KEY)
+  }
+
+  globalData = {
   }
 
   onLaunch() {
